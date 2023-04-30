@@ -1,0 +1,89 @@
+import tkinter as tk
+from tkinter import messagebox
+import threading
+import time
+import speech_recognition as sr
+from gtts import gTTS
+from playsound import playsound
+
+class App:
+    def __init__(self, master):
+        self.master = master
+        master.title("Text to Speech & Speech to Text")
+        master.geometry("400x300") 
+
+        space = tk.Label(root, height=2)
+        space.pack()
+
+        # Text to Speech
+        self.label1 = tk.Label(master, text="Text to Speech", bg='skyblue')
+        self.label1.pack()
+
+        space = tk.Label(root, height=1)
+        space.pack()
+
+        self.text_input = tk.Entry(master)
+        self.text_input.pack()
+
+        space = tk.Label(root, height=1)
+        space.pack()
+
+        self.play_button = tk.Button(master, text="Play", bg='green',command=self.text_to_speech)
+        self.play_button.pack()
+
+        space = tk.Label(root, height=4)
+        space.pack()
+
+        # Speech to Text
+        self.label2 = tk.Label(master, text="Speech to Text", height=1, bg='skyblue')
+        self.label2.pack()
+
+        space = tk.Label(root, height=1)
+        space.pack()
+
+
+        self.listen_button = tk.Button(master, text="Listen", bg='green', command=self.listen)
+        self.listen_button.bind("<ButtonRelease-1>", self.stop_listen)
+        self.listen_button.pack()
+
+        self.listening = False
+
+    def text_to_speech(self):
+        text = self.text_input.get()
+        if text != "":
+            language = 'en'
+            speech = gTTS(text=text, lang=language, slow=False)
+            speech.save("text_to_speech.mp3")
+            playsound("text_to_speech.mp3")
+
+    def listen(self):
+        self.listening = True
+        self.listen_button.config(bg='red')
+        self.r = sr.Recognizer()
+        self.t1 = threading.Thread(target=self.start_listen)
+        self.t1.start()
+
+    def start_listen(self):
+        with sr.Microphone() as source:
+            self.r.adjust_for_ambient_noise(source)
+            while self.listening:
+                try:
+                    audio = self.r.listen(source, timeout=5)
+                    text = self.r.recognize_google(audio)
+                    self.display_output(text)
+                    self.listening = False
+                except sr.UnknownValueError:
+                    pass
+                except sr.RequestError as e:
+                    print("Could not request results; {0}".format(e))
+
+    def stop_listen(self, event):
+        self.listen_button.config(bg='green')
+        self.listening = False
+
+    def display_output(self, text):
+        messagebox.showinfo("Speech to Text", text)
+
+root = tk.Tk()
+app = App(root)
+root.mainloop()
