@@ -7,42 +7,45 @@ from gtts import gTTS
 from playsound import playsound
 
 class App:
+
     def __init__(self, master):
         self.master = master
         master.title("Text to Speech & Speech to Text")
-        master.geometry("400x300") 
+        master.geometry("1366x768")
 
-        space = tk.Label(root, height=2)
-        space.pack()
+        # Set background image
+        self.background_image = tk.PhotoImage(file="background.png")
+        self.background_label = tk.Label(master, image=self.background_image)
+        self.background_label.place(relwidth=1, relheight=1)
+
 
         # Text to Speech
-        self.label1 = tk.Label(master, text="Text to Speech", bg='skyblue')
-        self.label1.pack()
+        self.label1 = tk.Label(master, text="WELCOME TO OUR GRAPHICAL USER INTERFACE", bg='green', font=("Times New Roman", 41, "bold"), fg='white')
+        self.label1.pack(pady=1)
+        self.label1 = tk.Label(master, text="***Text to Speech and Speech to Text***", bg='green', font=("Times New Roman", 15, "bold"), fg='white')
+        
+        
+        self.label1.pack(pady=40)
+        self.label1 = tk.Label(master, text="TEXT TO SPEECH", bg='green', font=("Times New Roman", 40, "bold"), fg='white')
+        self.label1.pack(pady=20)
 
-        space = tk.Label(root, height=1)
-        space.pack()
+        self.text_input = tk.Entry(master, font=("Times New Roman", 20))
+        self.text_input.pack(pady=20)
 
-        self.text_input = tk.Entry(master)
-        self.text_input.pack()
+        self.play_button = tk.Button(master, text="Play", bg='red', fg='white', font=("Times New Roman", 20, "bold"), command=self.text_to_speech)
+        self.play_button.pack(pady=20)
 
-        space = tk.Label(root, height=1)
-        space.pack()
-
-        self.play_button = tk.Button(master, text="Play", bg='green',command=self.text_to_speech)
-        self.play_button.pack()
-
-        space = tk.Label(root, height=4)
-        space.pack()
-
+          
         # Speech to Text
-        self.label2 = tk.Label(master, text="Speech to Text", height=1, bg='skyblue')
+        self.label2 = tk.Label(master, text="SPEECH TO TEXT", bg='green', font=("Times New Roman", 40, "bold"), fg='white')
         self.label2.pack()
 
         space = tk.Label(root, height=1)
-        space.pack()
+        #space.pack()
 
 
-        self.listen_button = tk.Button(master, text="Listen", bg='green', command=self.listen)
+        self.listen_button = tk.Button(master, text="Listen", bg='green',font=("Times New Roman", 20, "bold"), command=self.listen)
+        self.listen_button.pack(pady=20)
         self.listen_button.bind("<ButtonRelease-1>", self.stop_listen)
         self.listen_button.pack()
 
@@ -68,7 +71,7 @@ class App:
             self.r.adjust_for_ambient_noise(source)
             while self.listening:
                 try:
-                    audio = self.r.listen(source, timeout=5)
+                    audio = self.r.listen(source, timeout=20)
                     text = self.r.recognize_google(audio)
                     self.display_output(text)
                     self.listening = False
